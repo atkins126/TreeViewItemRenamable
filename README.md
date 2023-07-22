@@ -1,5 +1,5 @@
 # TreeViewItemRenamable
-Delphi TTreeViewItem with renaming option
+Delphi FMX TTreeViewItem with renaming option
 
 ## Usage
 
