@@ -1,6 +1,12 @@
 # TreeViewItemRenamable
 Delphi FMX TTreeViewItem with renaming option
 
+
+
+https://github.com/lmbelo/TreeViewItemRenamable/assets/8376898/8a75a16a-0823-4168-9540-e56876d83918
+
+
+
 ## Usage
 
 1) Add the "FMX.TreeView.Item.pas" file to your project and to the end of the uses section in your Form unit.
