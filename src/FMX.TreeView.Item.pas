@@ -7,7 +7,7 @@ uses
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.TreeView, FMX.Edit;
 
 type
-  TOnTreeViewItemRename = procedure(Sender: TObject; const AOldText: string; var ANewText: string) of object;
+  TOnTreeViewItemRename = procedure(Sender: TObject; const AOldName: string; var ANewName: string) of object;
   TTreeViewItem = class(FMX.TreeView.TTreeViewItem)
   private
     FText: TControl;
