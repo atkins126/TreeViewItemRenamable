@@ -15,6 +15,7 @@ type
     ImageList1: TImageList;
     TreeViewItem2: TTreeViewItem;
     StyleBook1: TStyleBook;
+    TreeViewItem3: TTreeViewItem;
     procedure FormCreate(Sender: TObject);
   private
     procedure OnRename(const AOldText: string; var ANewText: string);
@@ -37,7 +38,9 @@ uses
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
   TreeViewItem1.OnRename := OnRename;
-  TreeViewItem2.IsRenamable := false;
+  TreeViewItem2.Renamable := false;
+  TreeViewItem3.LazyInput := true;
+  TreeViewItem3.OnRename := OnRename;
 end;
 
 procedure TMainForm.OnRename(const AOldText: string; var ANewText: string);

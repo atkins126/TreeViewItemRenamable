@@ -36,6 +36,14 @@ object MainForm: TMainForm
         Text = 'TreeViewItem2'
       end
     end
+    object TreeViewItem3: TTreeViewItem
+      IsChecked = False
+      IsExpanded = False
+      IsSelected = False
+      StyleLookup = 'treeviewitemrenamestyle'
+      TabOrder = 1
+      Text = 'TreeViewItem3'
+    end
   end
   object StyleBook1: TStyleBook
     Styles = <
