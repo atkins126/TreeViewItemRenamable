@@ -3,7 +3,7 @@ unit FMX.TreeView.Item;
 interface
 
 uses
-  System.UITypes, System.Classes,
+  System.UITypes, System.Classes, System.SysUtils,
   FMX.Types, FMX.Graphics, FMX.Controls, FMX.TreeView, FMX.Edit;
 
 type
@@ -12,8 +12,10 @@ type
   private
     FText: TControl;
     FRename: TCustomEdit;
-    FIsRenamable: boolean;
+    FRenamable: boolean;
+    FLazyInput: boolean;
     FRenaming: boolean;
+    FLastClick: TDateTime;
     FOnRename: TOnTreeViewItemRename;
   private
     procedure UpdateRenameEditVisibility();
@@ -23,6 +25,7 @@ type
   protected
     procedure ApplyStyle; override;
     procedure FreeStyle; override;
+    procedure Click; override;
     procedure DblClick; override;
     procedure OnRenameKeyUp(Sender: TObject; var Key: Word; var KeyChar: WideChar; Shift: TShiftState);
     procedure OnRenameChangeTracking(Sender: TObject);
@@ -35,26 +38,24 @@ type
 
     property Renaming: boolean read FRenaming;
   published
-    property IsRenamable: boolean read FIsRenamable write FIsRenamable default true;
+    property Renamable: boolean read FRenamable write FRenamable default true;
+    //Doesn't trigger input on double click - it requires a longer interval...
+    property LazyInput: boolean read FLazyInput write FLazyInput;
     property OnRename: TOnTreeViewItemRename read FOnRename write FOnRename;
   end;
 
 implementation
 
 uses
-  System.Math;
+  System.Math, System.DateUtils;
 
 { TTreeViewItem }
-
-function TTreeViewItem.CanRename: boolean;
-begin
-  Result := FIsRenamable and Assigned(FRename);
-end;
 
 constructor TTreeViewItem.Create(AOwner: TComponent);
 begin
   inherited;
-  FIsRenamable := true;
+  FLastClick := MinDateTime;
+  FRenamable := true;
 end;
 
 procedure TTreeViewItem.ApplyStyle;
@@ -93,6 +94,29 @@ begin
   end;
 end;
 
+function TTreeViewItem.CanRename: boolean;
+begin
+  Result := FRenamable and Assigned(FRename);
+end;
+
+procedure TTreeViewItem.Click;
+begin
+  inherited;
+  var LInterval := MilliSecondsBetween(FLastClick, Now);
+  if (LInterval > 500) and (LInterval < 900) then begin
+    if FLazyInput and CanRename() then
+      DoStartRenaming();
+  end else
+    FLastClick := Now();
+end;
+
+procedure TTreeViewItem.DblClick;
+begin
+  inherited;
+  if not FLazyInput and CanRename() then
+    DoStartRenaming();
+end;
+
 procedure TTreeViewItem.DoStartRenaming;
 begin
   FRenaming := true;
@@ -121,6 +145,7 @@ begin
   finally
     FRenaming := false;
     UpdateRenameEditVisibility();
+    Self.ResetFocus();
   end;
 end;
 
@@ -139,13 +164,6 @@ begin
   FRename.Width := System.Math.Max(
     30,
     FRename.Canvas.TextWidth(FRename.Text) + 10);
-end;
-
-procedure TTreeViewItem.DblClick;
-begin
-  inherited;
-  if CanRename() then
-    DoStartRenaming();
 end;
 
 procedure TTreeViewItem.OnRenameKeyUp(Sender: TObject; var Key: Word; var KeyChar: WideChar;
@@ -171,6 +189,5 @@ procedure TTreeViewItem.OnRenameExit(Sender: TObject);
 begin
   DoEndRenaming(true);
 end;
-
 
 end.
